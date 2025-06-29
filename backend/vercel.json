@@ -4,12 +4,7 @@
       "runtime": "@vercel/node@2.15.10"
     }
   },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/dist/api/$1"
-    }
-  ],
+  "outputDirectory": "public",
   "headers": [
     {
       "source": "/api/(.*)",
