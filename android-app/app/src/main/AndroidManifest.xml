@@ -17,19 +17,19 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
     
+    <!-- Android 13+ 저장소 권한 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    
     <!-- 알림 권한 (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".GifticonApplication"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GifticonManager"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         
         <activity

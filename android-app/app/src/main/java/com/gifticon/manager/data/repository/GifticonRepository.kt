@@ -72,4 +72,13 @@ class GifticonRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun checkApiHealth(): Boolean {
+        return try {
+            val response = analysisService.checkHealth()
+            response.isSuccessful && response.body()?.success == true
+        } catch (e: Exception) {
+            false
+        }
+    }
 } 

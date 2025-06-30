@@ -35,7 +35,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://your-api-domain.vercel.app/")
+            .baseUrl("http://10.0.2.2:3000/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

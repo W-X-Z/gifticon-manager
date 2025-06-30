@@ -25,6 +25,13 @@ data class Gifticon(
     val updatedAt: Long = System.currentTimeMillis()
 ) : Parcelable
 
-enum class GifticonCategory {
-    CAFE, MOVIE, CONVENIENCE_STORE, CHICKEN, FAST_FOOD, BEAUTY, SHOPPING, ETC
+enum class GifticonCategory(val displayName: String) {
+    CAFE("카페"),
+    MOVIE("영화"),
+    CONVENIENCE_STORE("편의점"),
+    CHICKEN("치킨"),
+    FAST_FOOD("패스트푸드"),
+    BEAUTY("뷰티"),
+    SHOPPING("쇼핑"),
+    ETC("기타")
 } 

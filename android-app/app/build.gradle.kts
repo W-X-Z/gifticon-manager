@@ -108,8 +108,14 @@ dependencies {
     // Barcode Scanning
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
 
+    // Text Recognition (OCR)
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+
     // JSON
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // Icons
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
