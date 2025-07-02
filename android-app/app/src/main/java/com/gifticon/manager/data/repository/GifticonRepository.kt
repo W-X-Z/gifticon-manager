@@ -1,18 +1,16 @@
 package com.gifticon.manager.data.repository
 
-import com.gifticon.manager.data.api.AnalyzeImageRequest
-import com.gifticon.manager.data.api.GifticonAnalysisService
 import com.gifticon.manager.data.database.GifticonDao
 import com.gifticon.manager.data.model.Gifticon
 import com.gifticon.manager.data.model.GifticonCategory
+import com.gifticon.manager.utils.ImageStorageUtil
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class GifticonRepository @Inject constructor(
-    private val gifticonDao: GifticonDao,
-    private val analysisService: GifticonAnalysisService
+    private val gifticonDao: GifticonDao
 ) {
     
     // Local Database Operations
@@ -36,49 +34,22 @@ class GifticonRepository @Inject constructor(
     
     suspend fun deleteGifticon(gifticon: Gifticon) = gifticonDao.deleteGifticon(gifticon)
     
+    suspend fun deleteGifticon(id: Long) {
+        // 기프티콘 삭제 전에 이미지 파일도 삭제
+        val gifticon = gifticonDao.getGifticonById(id)
+        gifticon?.imagePath?.let { imagePath ->
+            if (imagePath.startsWith("file://")) {
+                val filePath = imagePath.removePrefix("file://")
+                ImageStorageUtil.deleteImage(filePath)
+            }
+        }
+        gifticonDao.deleteGifticonById(id)
+    }
+    
     suspend fun updateBalance(id: Long, newBalance: Int) = 
         gifticonDao.updateBalance(id, newBalance)
     
     suspend fun markAsUsed(id: Long) = gifticonDao.markAsUsed(id)
     
-    // API Operations
-    suspend fun analyzeGifticonImage(imageBase64: String, mimeType: String?): Result<Gifticon> {
-        return try {
-            val request = AnalyzeImageRequest(imageBase64, mimeType)
-            val response = analysisService.analyzeImage(request)
-            
-            if (response.isSuccessful && response.body()?.success == true) {
-                val data = response.body()?.data
-                if (data != null) {
-                    val gifticon = Gifticon(
-                        brandName = data.brandName,
-                        productName = data.productName,
-                        expiryDate = data.expiryDate,
-                        amount = data.amount,
-                        balance = data.balance,
-                        barcodeNumber = data.barcodeNumber,
-                        category = GifticonCategory.valueOf(data.category.uppercase()),
-                        purchaseDate = data.purchaseDate
-                    )
-                    Result.success(gifticon)
-                } else {
-                    Result.failure(Exception("응답 데이터가 비어있습니다."))
-                }
-            } else {
-                val errorMessage = response.body()?.error ?: "이미지 분석에 실패했습니다."
-                Result.failure(Exception(errorMessage))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
 
-    suspend fun checkApiHealth(): Boolean {
-        return try {
-            val response = analysisService.checkHealth()
-            response.isSuccessful && response.body()?.success == true
-        } catch (e: Exception) {
-            false
-        }
-    }
 } 

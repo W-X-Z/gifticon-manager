@@ -1,6 +1,5 @@
 package com.gifticon.manager.di
 
-import com.gifticon.manager.data.api.GifticonAnalysisService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,11 +38,5 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
-    
-    @Provides
-    @Singleton
-    fun provideGifticonAnalysisService(retrofit: Retrofit): GifticonAnalysisService {
-        return retrofit.create(GifticonAnalysisService::class.java)
     }
 } 

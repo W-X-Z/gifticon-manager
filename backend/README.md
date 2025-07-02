@@ -56,7 +56,7 @@ cp env.example .env
 ```
 
 필수 환경 변수:
-- `OPENAI_API_KEY`: OpenAI API 키
+- `NODE_ENV`: 환경 설정 (development/production)
 
 ### 3. 로컬 서버 실행
 ```bash
@@ -103,7 +103,7 @@ const analyzeImage = async (imageBase64) => {
 - **런타임**: Node.js 18+
 - **플랫폼**: Vercel Functions
 - **언어**: TypeScript
-- **AI API**: OpenAI GPT-4o-2024-08-06
+- **이미지 분석**: 클라이언트 OCR 기반
 - **이미지 처리**: Sharp
 
 ## 📋 지원 기능
@@ -111,12 +111,12 @@ const analyzeImage = async (imageBase64) => {
 - ✅ 이미지 크기 최적화 (최대 1024px)
 - ✅ 다양한 이미지 형식 지원 (JPEG, PNG, WebP)
 - ✅ 구조화된 JSON 응답
-- ✅ 한국어 기프티콘 특화 분석
+- ✅ 클라이언트 OCR 기반 텍스트 추출
 - ✅ CORS 지원
 - ✅ 에러 핸들링
 
 ## 🚨 주의사항
 
 - 이미지 크기 제한: 5MB
-- API 요청 제한: OpenAI API 정책에 따름
+- API 요청 제한: Vercel Functions 정책에 따름
 - 지원 언어: 한국어 기프티콘에 최적화 

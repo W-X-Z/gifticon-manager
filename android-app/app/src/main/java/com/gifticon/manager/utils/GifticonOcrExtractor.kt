@@ -11,6 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.TimeZone
 
 data class ExtractedGifticonInfo(
     val expiryDate: String? = null
@@ -205,7 +206,9 @@ class GifticonOcrExtractor {
     }
     
     private fun formatDate(date: Date): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("Asia/Seoul")
+        }
         return sdf.format(date)
     }
     

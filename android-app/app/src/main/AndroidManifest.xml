@@ -26,11 +26,19 @@
     <application
         android:name=".GifticonApplication"
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.GifticonManager"
-        android:usesCleartextTraffic="true"
+        android:usesCleartextTraffic="false"
+        android:extractNativeLibs="false"
+        android:requestLegacyExternalStorage="false"
         tools:targetApi="31">
+        
+        <!-- AdMob 앱 ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3722799840497343~2515356774" />
         
         <activity
             android:name=".MainActivity"
@@ -52,6 +60,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        
+        <!-- WorkManager Startup 제거 -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
         
     </application>
 

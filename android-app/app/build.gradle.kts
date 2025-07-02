@@ -15,7 +15,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -23,13 +23,34 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("gifticon-release-key.keystore")
+            storePassword = "gifticon2024!"
+            keyAlias = "gifticon-key"
+            keyPassword = "gifticon2024!"
+        }
+    }
+
     buildTypes {
+        debug {
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
         }
     }
     
@@ -44,6 +65,7 @@ android {
     
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     
     composeOptions {
@@ -116,6 +138,14 @@ dependencies {
 
     // Icons
     implementation("androidx.compose.material:material-icons-extended:1.6.1")
+
+    // WorkManager (Background Tasks)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.hilt:hilt-work:1.1.0")
+    kapt("androidx.hilt:hilt-compiler:1.1.0")
+
+    // AdMob
+    implementation("com.google.android.gms:play-services-ads:22.6.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

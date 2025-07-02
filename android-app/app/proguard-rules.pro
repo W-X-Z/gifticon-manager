@@ -41,4 +41,8 @@
 
 # Keep data classes used for API responses
 -keep class com.gifticon.manager.data.api.** { *; }
--keep class com.gifticon.manager.data.model.** { *; } 
+-keep class com.gifticon.manager.data.model.** { *; }
+
+# AdMob
+-keep class com.google.android.gms.ads.** { *; }
+-dontwarn com.google.android.gms.ads.** 

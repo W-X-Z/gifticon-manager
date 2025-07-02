@@ -38,32 +38,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                repository.getActiveGifticons().collect { gifticonList ->
-                    // 테스트용 더미 데이터 추가 (실제 데이터가 없을 때)
-                    val testGifticons = if (gifticonList.isEmpty()) {
-                        listOf(
-                            Gifticon(
-                                brandName = "스타벅스",
-                                productName = "아메리카노",
-                                expiryDate = "2024-12-31",
-                                amount = 5000,
-                                balance = 5000,
-                                category = GifticonCategory.CAFE
-                            ),
-                            Gifticon(
-                                brandName = "투썸플레이스",
-                                productName = "카페라떼",
-                                expiryDate = "2024-11-30",
-                                amount = 6000,
-                                balance = 6000,
-                                category = GifticonCategory.CAFE
-                            )
-                        )
-                    } else {
-                        gifticonList
-                    }
-                    
-                    _gifticons.value = testGifticons
+                repository.getAllGifticons().collect { gifticonList ->
+                    _gifticons.value = gifticonList
                     _isLoading.value = false
                 }
             } catch (e: Exception) {

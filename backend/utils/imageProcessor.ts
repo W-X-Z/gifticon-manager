@@ -47,14 +47,5 @@ export class ImageProcessor {
     return buffer.length <= maxSizeInBytes;
   }
 
-  /**
-   * Base64 이미지를 OpenAI API 형식으로 변환
-   */
-  static prepareForOpenAI(base64String: string): string {
-    // OpenAI API는 data:image/jpeg;base64, prefix가 필요
-    if (base64String.startsWith('data:image/')) {
-      return base64String;
-    }
-    return `data:image/jpeg;base64,${base64String}`;
-  }
+
 } 

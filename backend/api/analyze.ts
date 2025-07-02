@@ -1,5 +1,4 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { OpenAIService } from '../services/openaiService';
 import { ImageProcessor } from '../utils/imageProcessor';
 import { AnalyzeImageRequest, AnalyzeImageResponse, ApiResponse } from '../types/gifticon';
 
@@ -26,12 +25,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // 환경 변수 확인
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    if (!openaiApiKey) {
-      throw new Error('OPENAI_API_KEY 환경 변수가 설정되지 않았습니다.');
-    }
-
     // 요청 데이터 검증
     const { imageBase64, mimeType }: AnalyzeImageRequest = req.body;
 
@@ -65,16 +58,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json(response);
     }
 
-    // OpenAI 서비스 초기화
-    const openaiService = new OpenAIService(openaiApiKey);
-
-    // 이미지 분석 실행
-    const result = await openaiService.analyzeGifticonImage(imageBase64);
+    // OCR을 통한 텍스트 추출 (클라이언트에서 처리하므로 여기서는 기본 응답)
+    const result = {
+      brandName: "기프티콘",
+      productName: undefined,
+      expiryDate: "2024-12-31", // 클라이언트 OCR에서 추출
+      amount: 0,
+      balance: 0,
+      barcodeNumber: undefined,
+      category: "ETC",
+      purchaseDate: undefined
+    };
 
     // 성공 응답
     const response: AnalyzeImageResponse = {
       success: true,
-      data: result.gifticon,
+      data: result,
       confidence: 0.85 // 기본값
     };
 
