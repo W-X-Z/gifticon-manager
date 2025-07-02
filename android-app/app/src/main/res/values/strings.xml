@@ -38,5 +38,12 @@
     <string name="notification_channel_name">기프티콘 만료 알림</string>
     <string name="notification_channel_description">기프티콘 만료일을 미리 알려드립니다</string>
     <string name="notification_expiring_title">기프티콘 만료 예정</string>
+    
+    <!-- 갤러리 스캔 관련 -->
+    <string name="gallery_scan_title">갤러리 스캔</string>
+    <string name="gallery_scan_description">갤러리에서 기프티콘을 자동으로 찾아 등록합니다</string>
+    <string name="gallery_scan_permission_required">갤러리 접근 권한이 필요합니다</string>
+    <string name="gallery_scan_in_progress">갤러리 스캔 중...</string>
+    <string name="gallery_scan_completed">갤러리 스캔 완료</string>
     <string name="notification_expiring_message">%1$s 기프티콘이 %2$d일 후 만료됩니다</string>
 </resources> 

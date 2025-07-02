@@ -97,6 +97,7 @@ dependencies {
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
 
     // Hilt (Dependency Injection)
     implementation("com.google.dagger:hilt-android:2.48")

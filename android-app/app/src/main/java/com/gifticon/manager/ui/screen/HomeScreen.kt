@@ -1,5 +1,9 @@
 package com.gifticon.manager.ui.screen
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,8 +18,10 @@ import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,12 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.work.WorkInfo
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.navigation.NavController
 import com.gifticon.manager.ui.viewmodel.HomeViewModel
 import com.gifticon.manager.utils.AdMobUtil
+import com.gifticon.manager.utils.GalleryScanManager
 import coil.compose.AsyncImage
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -132,9 +141,24 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val gifticons by viewModel.gifticons.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val apiStatus by viewModel.apiStatus.collectAsState()
+
+    // 갤러리 스캔 관련 상태
+    var showGalleryScanDialog by remember { mutableStateOf(false) }
+    val galleryScanWorkInfo by GalleryScanManager.getGalleryScanStatus(context).observeAsState()
+    val isGalleryScanning = galleryScanWorkInfo?.any { workInfo -> workInfo.state == WorkInfo.State.RUNNING } == true
+    
+    // 권한 요청 런처
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showGalleryScanDialog = true
+        }
+    }
 
     // 화면이 포커스될 때마다 새로고침
     LaunchedEffect(Unit) {
@@ -204,6 +228,53 @@ fun HomeScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
+                            
+                            // 갤러리 스캔 버튼
+                            IconButton(
+                                onClick = {
+                                    if (isGalleryScanning) {
+                                        // 스캔 중이면 취소 확인
+                                        GalleryScanManager.cancelGalleryScan(context)
+                                    } else {
+                                        // 권한 확인 후 스캔 시작
+                                        val permission = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                                            Manifest.permission.READ_MEDIA_IMAGES
+                                        } else {
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        }
+                                        
+                                        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                            showGalleryScanDialog = true
+                                        } else {
+                                            permissionLauncher.launch(permission)
+                                        }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(
+                                        if (isGalleryScanning) MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                                        else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                        RoundedCornerShape(12.dp)
+                                    )
+                            ) {
+                                if (isGalleryScanning) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        strokeWidth = 2.dp,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                } else {
+                                    Icon(
+                                        Icons.Default.PhotoLibrary,
+                                        contentDescription = "갤러리 스캔",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
+                            
+                            Spacer(modifier = Modifier.width(8.dp))
                             
                             // 알림 아이콘 (헤더 우측)
                             IconButton(
@@ -487,5 +558,47 @@ fun HomeScreen(
                 }
             }
         }
+    }
+    
+    // 갤러리 스캔 확인 다이얼로그
+    if (showGalleryScanDialog) {
+        AlertDialog(
+            onDismissRequest = { showGalleryScanDialog = false },
+            title = { 
+                Text(
+                    "갤러리 스캔",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                ) 
+            },
+            text = { 
+                Text(
+                    "갤러리에서 최근 1000장의 사진을 검사하여 기프티콘을 자동으로 찾아 등록합니다.\n\n" +
+                    "• 바코드/QR코드가 있는 사진만 검사합니다\n" +
+                    "• 만료일이 인식되는 사진만 등록됩니다\n" +
+                    "• 백그라운드에서 실행되어 다른 앱을 사용할 수 있습니다\n" +
+                    "• 완료되면 푸시 알림으로 알려드립니다\n\n" +
+                    "예상 소요 시간: 5-8분",
+                    style = MaterialTheme.typography.bodyMedium
+                ) 
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showGalleryScanDialog = false
+                        GalleryScanManager.startGalleryScan(context)
+                    }
+                ) {
+                    Text("시작")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showGalleryScanDialog = false }
+                ) {
+                    Text("취소")
+                }
+            }
+        )
     }
 } 
