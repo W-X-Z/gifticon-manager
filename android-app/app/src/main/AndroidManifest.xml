@@ -17,8 +17,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
     
-    <!-- Android 13+ 저장소 권한 -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Android 13+ 저장소 권한 - 사진 선택기 사용으로 불필요 -->
+    <!-- <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> -->
     
     <!-- 알림 권한 (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
